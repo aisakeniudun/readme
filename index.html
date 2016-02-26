@@ -1,0 +1,30 @@
+<html>
+
+<head>
+	<title>FileReaderExample</title>
+</head>
+
+<body>
+	<div>
+		<input type="file" id="file-selector" onchange="showPreview(this)" />
+		<img width="100" height="100" id="portrait"/>
+		<textarea id="txt"></textarea>
+	</div>
+	<script>
+	function showPreview(source) {
+		var file = source.files[0];
+		if (window.FileReader) {
+			var fr = new FileReader();
+			fr.onloadend = function(e) {
+				document.getElementById("txt").value = e.target.result;
+			};
+			//fr.readAsDataURL(file);
+			fr.readAsText(file);
+		}
+		else{
+			alert('filereader not supported');
+		}
+	}
+	</script>
+</body>
+</html
