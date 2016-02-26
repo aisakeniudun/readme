@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+
+<head>
+	<title>App</title>
+	<style type="text/css">
+		#progressbar{
+			background:teal;
+			height: 1em;
+			width:0;
+		}
+	</style>
+</head>
+
+<body>
+	<div>
+		<input type="file" id="fileBrowser" multiple="true">
+	</div>
+	<div>
+		<textarea id="fileViewer" cols="30" rows="10"></textarea>
+	</div>
+	<div>
+		<span>colsep</span>
+		<input id="colsep" type="text" />
+	</div>
+	<div>
+		<span>rowsep</span>
+		<input type="text" id="rowsep" />
+	</div>
+	<div>
+		<div id="progressbar"></div>
+	</div>
+	<div>
+		<div id="console"></div>
+	</div>
+	
+	<script src="jquery.js"></script>
+	<script src="app.js"></script>
+	<script>
+	$(function() {
+		$('#fileBrowser').fileReaderJS({
+			readAsDefault: 'Text',
+			//accept:'text/*',
+			readAsMap: {
+				'image/*': 'DataURL',
+				'data/*': 'ArrayBuffer',
+				'text/*': 'Text'
+			},
+			on: {
+				beforestart: function(e, file) {
+					// return false if you want to skip this file
+				},
+				loadstart: function(e, file) { 
+					$('#console').append('<br/> File load start: '+ file.name);
+				},
+				progress: function(e, file) {
+
+					$('#console').append('<br/>'+e.loaded/e.total);
+					$('#progressbar').css('width',e.loaded/e.total*100+'%');
+				},
+				load: function(e, file) {
+					$('#console').append('<br/>Load started...');
+				},
+				error: function(e, file) {
+					$('#console').append('<br/>Load error: '+file.name);
+				},
+				loadend: function(e, file) {
+					$('#console').append('<br/>Load end: '+file.name);
+					var result = e.target.result;
+					$('#fileViewer').text(result);
+					var lines = result.split('\n');
+					console.log(lines);
+					var cols = lines[0].split(/\s+/);
+					console.log(cols);
+				},
+				abort: function(e, file) {
+					$('#console').append('<br/>Load aborted: '+file.name);
+				},
+				skip: function(e, file) {
+					// Called when a file is skipped.  This happens when:
+					//  1) A file doesn't match the accept option
+					//  2) false is returned in the beforestart callback
+					$('#console').append('<br/>Load skipped: '+file.name);
+				},
+				groupstart: function(group) {
+					// Called when a 'group' (a single drop / copy / select that may
+					// contain multiple files) is receieved.
+					// You can ignore this event if you don't care about groups
+				},
+				groupend: function(group) {
+					// Called when a 'group' is finished.
+					// You can ignore this event if you don't care about groups
+				}
+			}
+		})
+	});
+	</script>
+</body>
+
+</html>
